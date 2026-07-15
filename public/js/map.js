@@ -98,6 +98,19 @@ function openSectorModal(sector) {
     voiceEl.style.display = 'block';
   }
 
+  // View Sector Grid button
+  const existingGridBtn = document.getElementById('modal-grid-btn');
+  if (existingGridBtn) existingGridBtn.remove();
+
+  if (sector.severity !== 'silent') {
+    const gridBtn = document.createElement('button');
+    gridBtn.id = 'modal-grid-btn';
+    gridBtn.className = 'modal-grid-btn mono';
+    gridBtn.textContent = '⬡ VIEW SECTOR GRID';
+    gridBtn.addEventListener('click', () => openSectorGrid(sector));
+    document.querySelector('.modal-info').appendChild(gridBtn);
+  }
+
   modal.classList.remove('hidden');
 }
 

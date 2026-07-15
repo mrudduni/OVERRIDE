@@ -248,6 +248,48 @@
 
     </main><!-- end .main-content -->
 
+    <!-- SECTOR GRID OVERLAY — drill-down layer 3 -->
+    <div id="sector-grid-overlay" class="sector-grid-overlay hidden" role="dialog" aria-modal="true" aria-label="Sector building grid">
+      <div class="grid-inner" id="grid-inner">
+
+        <!-- Breadcrumb + nav -->
+        <div class="grid-topbar">
+          <div class="grid-breadcrumb mono" id="grid-breadcrumb">
+            <span class="muted">SECTOR MAP</span>
+            <span class="breadcrumb-sep"> › </span>
+            <span class="safe">GRID</span>
+          </div>
+          <div class="grid-nav-btns">
+            <button class="grid-nav-btn mono" id="grid-back-btn" aria-label="Back to sector card">‹ SECTOR CARD</button>
+            <button class="grid-nav-btn mono muted" id="grid-map-btn" aria-label="Back to sector map">‹‹ SECTOR MAP</button>
+          </div>
+        </div>
+
+        <!-- Grid header -->
+        <div class="grid-header">
+          <h2 class="mono" id="grid-sector-name"></h2>
+          <div class="mono" id="grid-sector-severity"></div>
+        </div>
+
+        <!-- Building type legend row -->
+        <div class="grid-legend-row mono muted">
+          <span>⌂ RESIDENTIAL</span>
+          <span>⚡ POWER</span>
+          <span>💧 WATER</span>
+          <span>◉ COMMS</span>
+          <span>▣ CIVIC</span>
+          <span class="grid-infra-note">★ HEAVIER BORDER = INFRASTRUCTURE</span>
+        </div>
+
+        <!-- Building cells -->
+        <div class="building-grid" id="building-grid" role="list"></div>
+
+        <!-- Building tooltip (positioned dynamically) -->
+        <div class="building-tooltip hidden" id="building-tooltip" role="tooltip"></div>
+
+      </div>
+    </div>
+
     <!-- SECTOR DETAIL MODAL -->
     <div id="sector-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-content">
@@ -313,6 +355,7 @@
   <script src="js/ascii.js"></script>
   <script src="js/gauges.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/grid.js"></script>
   <script src="js/breach.js"></script>
   <script src="js/survival.js"></script>
   <script src="js/community.js"></script>

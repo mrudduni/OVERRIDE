@@ -98,6 +98,7 @@ function initAll() {
   initFooter();
   initNexusEscalation();
   initLegendHint();
+  initGrid();
 }
 
 // ── Navigation ────────────────────────────────
