@@ -4,11 +4,11 @@
 // ============================================
 
 const BLDG_GLYPHS = {
-  residential: '\u2302',  // ⌂
-  power:       '\u26a1',  // ⚡
-  water:       '\ud83d\udca7', // 💧
-  comms:       '\u25c9',  // ◉
-  civic:       '\u25a3',  // ▣
+  residential: '\u2302',
+  power:       '\u26a1',
+  water:       '\ud83d\udca7',
+  comms:       '\u25c9',
+  civic:       '\u25a3',
 };
 
 const BLDG_LABELS = {
@@ -19,14 +19,11 @@ const BLDG_LABELS = {
   civic:       'CIVIC BUILDING',
 };
 
-// Infrastructure = larger cells, anchor positions
 const INFRA_TYPES = new Set(['power', 'water', 'comms']);
+const SIZE_INFRA  = 90;
+const SIZE_STD    = 60;
+const GAP         = 20;   // minimum gap between any two cells
 
-// Cell sizes (px) — infra is ~1.6x residential
-const SIZE_INFRA = 88;
-const SIZE_STD   = 56;
-
-// Severity line colors (reuse palette)
 const LINE_COLOR = {
   safe:        'rgba(63,224,197,0.35)',
   warning:     'rgba(255,179,71,0.55)',
@@ -43,7 +40,6 @@ function openSectorGrid(sector) {
   _activeSector = sector;
   hideBuildingTooltip();
 
-  // Breadcrumb
   document.getElementById('grid-breadcrumb').innerHTML =
     `<span class="muted">SECTOR MAP</span>` +
     `<span class="breadcrumb-sep"> \u203a </span>` +
@@ -56,12 +52,113 @@ function openSectorGrid(sector) {
   sevEl.textContent = 'SECTOR STATUS: ' + sector.severity.toUpperCase();
   sevEl.className   = 'mono ' + sector.severity;
 
-  // Build the canvas
   _buildClusterCanvas(sector);
 
-  // Sharp-cut transition
   document.getElementById('sector-modal').classList.add('hidden');
   document.getElementById('sector-grid-overlay').classList.remove('hidden');
+}
+
+// ── Auto-layout: place infra as anchors, cluster residents around them ──
+function _computeLayout(buildings, W, H) {
+  const PAD  = 24;
+  const infra = buildings.filter(b => INFRA_TYPES.has(b.type));
+  const rest  = buildings.filter(b => !INFRA_TYPES.has(b.type));
+
+  const placed = {}; // id → {left, top, w, h}
+
+  // ── Step 1: distribute infra nodes evenly across canvas ──
+  const cols    = Math.ceil(Math.sqrt(infra.length));
+  const rows    = Math.ceil(infra.length / cols);
+  const cellW   = (W - PAD * 2) / cols;
+  const cellH   = (H - PAD * 2) / rows;
+
+  infra.forEach((b, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    // Centre of each zone, with a small deterministic offset per index
+    const jitter = ((i * 37) % 28) - 14;
+    const cx = PAD + col * cellW + cellW / 2 + jitter;
+    const cy = PAD + row * cellH + cellH / 2 + jitter * 0.5;
+    placed[b.id] = {
+      left: Math.round(cx - SIZE_INFRA / 2),
+      top:  Math.round(cy - SIZE_INFRA / 2),
+      w: SIZE_INFRA, h: SIZE_INFRA,
+    };
+  });
+
+  // ── Step 2: orbit non-infra around their servedBy anchor ──
+  // Group by servedBy
+  const groups = {};
+  rest.forEach(b => {
+    const key = b.servedBy || '__unanchored__';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(b);
+  });
+
+  Object.entries(groups).forEach(([anchorId, members]) => {
+    const anchor = placed[anchorId];
+    const anchorCX = anchor ? anchor.left + anchor.w / 2 : W / 2;
+    const anchorCY = anchor ? anchor.top  + anchor.h / 2 : H / 2;
+    const orbitR   = SIZE_INFRA / 2 + SIZE_STD / 2 + GAP + 24;
+    const angleStep = (2 * Math.PI) / members.length;
+
+    // Start angle offset per anchor to avoid all clusters pointing same way
+    const startAngle = anchorId === '__unanchored__'
+      ? 0
+      : (anchorId.charCodeAt(anchorId.length - 1) * 0.8);
+
+    members.forEach((b, i) => {
+      const angle = startAngle + i * angleStep;
+      const cx    = anchorCX + orbitR * Math.cos(angle);
+      const cy    = anchorCY + orbitR * Math.sin(angle);
+      placed[b.id] = {
+        left: Math.round(cx - SIZE_STD / 2),
+        top:  Math.round(cy - SIZE_STD / 2),
+        w: SIZE_STD, h: SIZE_STD,
+      };
+    });
+  });
+
+  // ── Step 3: clamp all cells inside canvas bounds ──
+  Object.values(placed).forEach(p => {
+    p.left = Math.max(PAD, Math.min(W - p.w - PAD, p.left));
+    p.top  = Math.max(PAD, Math.min(H - p.h - PAD, p.top));
+  });
+
+  // ── Step 4: collision resolution — push overlapping cells apart ──
+  const ids   = Object.keys(placed);
+  const ITERS = 12;
+  for (let iter = 0; iter < ITERS; iter++) {
+    for (let a = 0; a < ids.length; a++) {
+      for (let b = a + 1; b < ids.length; b++) {
+        const pa = placed[ids[a]];
+        const pb = placed[ids[b]];
+        const overlapX = (pa.left + pa.w + GAP) - pb.left;
+        const overlapY = (pa.top  + pa.h + GAP) - pb.top;
+        if (overlapX > 0 && overlapY > 0 &&
+            pb.left < pa.left + pa.w &&
+            pb.top  < pa.top  + pa.h) {
+          // Push along the smaller overlap axis
+          const pushX = overlapX / 2;
+          const pushY = overlapY / 2;
+          if (overlapX < overlapY) {
+            pa.left -= pushX;
+            pb.left += pushX;
+          } else {
+            pa.top -= pushY;
+            pb.top += pushY;
+          }
+          // Re-clamp
+          pa.left = Math.max(PAD, Math.min(W - pa.w - PAD, pa.left));
+          pa.top  = Math.max(PAD, Math.min(H - pa.h - PAD, pa.top));
+          pb.left = Math.max(PAD, Math.min(W - pb.w - PAD, pb.left));
+          pb.top  = Math.max(PAD, Math.min(H - pb.h - PAD, pb.top));
+        }
+      }
+    }
+  }
+
+  return placed;
 }
 
 // ── Build the cluster canvas ──────────────────
@@ -74,42 +171,43 @@ function _buildClusterCanvas(sector) {
     return;
   }
 
-  // Canvas dimensions
-  const W = canvas.offsetWidth  || 800;
-  const H = canvas.offsetHeight || 520;
+  const W = canvas.offsetWidth  || 860;
+  const H = canvas.offsetHeight || 500;
 
-  // ── SVG layer for connective lines (behind buildings) ──
+  // SVG layer behind buildings
   _svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   _svgEl.setAttribute('width',  '100%');
   _svgEl.setAttribute('height', '100%');
   _svgEl.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:1;overflow:visible;';
   canvas.appendChild(_svgEl);
 
-  // ── Build building elements and track positions ──
-  const posMap = {}; // id → {cx, cy} center pixels
+  // Compute collision-free layout
+  const layout = _computeLayout(sector.buildings, W, H);
 
+  // Build posMap (center coords) for SVG lines
+  const posMap = {};
+  Object.entries(layout).forEach(([id, p]) => {
+    posMap[id] = { cx: p.left + p.w / 2, cy: p.top + p.h / 2 };
+  });
+
+  // Create building cells
   sector.buildings.forEach(bldg => {
     const isInfra = INFRA_TYPES.has(bldg.type);
-    const size    = isInfra ? SIZE_INFRA : SIZE_STD;
-
-    // Convert percentage pos to pixel, clamped to keep inside canvas
-    const px = _posToPixel(bldg.pos || { x: 50, y: 50 }, W, H, size);
-
-    // Track center for SVG lines
-    posMap[bldg.id] = { cx: px.left + size / 2, cy: px.top + size / 2 };
+    const p       = layout[bldg.id];
+    if (!p) return;
 
     const cell = document.createElement('div');
     cell.className = `bldg-cell ${bldg.status}${isInfra ? ' bldg-infra' : ''}`;
     cell.dataset.id = bldg.id;
     cell.setAttribute('tabindex', '0');
     cell.setAttribute('role', 'button');
-    cell.setAttribute('aria-label', `${bldg.label} — ${BLDG_LABELS[bldg.type]} — ${bldg.status}`);
+    cell.setAttribute('aria-label', `${bldg.label} \u2014 ${BLDG_LABELS[bldg.type]} \u2014 ${bldg.status}`);
     cell.style.cssText = `
       position: absolute;
-      left: ${px.left}px;
-      top:  ${px.top}px;
-      width:  ${size}px;
-      height: ${size}px;
+      left: ${p.left}px;
+      top:  ${p.top}px;
+      width:  ${p.w}px;
+      height: ${p.h}px;
       z-index: 2;
     `;
 
@@ -138,19 +236,15 @@ function _buildClusterCanvas(sector) {
     canvas.appendChild(cell);
   });
 
-  // ── Draw SVG connective lines ──────────────
-  // Wait one frame so posMap center coords are final
+  // Draw SVG lines after DOM paint
   requestAnimationFrame(() => {
     sector.buildings.forEach(bldg => {
       if (!bldg.servedBy) return;
       const from = posMap[bldg.id];
       const to   = posMap[bldg.servedBy];
       if (!from || !to) return;
-
-      // Determine line status: use the infrastructure node's status
       const infraBldg = sector.buildings.find(b => b.id === bldg.servedBy);
       const lineSev   = infraBldg ? infraBldg.status : bldg.status;
-
       _drawLine(from.cx, from.cy, to.cx, to.cy, lineSev);
     });
   });
@@ -167,28 +261,13 @@ function _drawLine(x1, y1, x2, y2, severity) {
   line.setAttribute('stroke', LINE_COLOR[severity] || LINE_COLOR.safe);
   line.setAttribute('stroke-width', severity === 'compromised' ? '1.5' : '1');
   line.setAttribute('stroke-linecap', 'round');
-
   if (severity === 'warning') {
     line.classList.add('conn-line-warning');
   } else if (severity === 'compromised') {
-    line.classList.add('conn-line-compromised');
-    // Dashed flow effect
     line.setAttribute('stroke-dasharray', '6 4');
-    line.classList.add('conn-line-flow');
+    line.classList.add('conn-line-compromised', 'conn-line-flow');
   }
-
   _svgEl.appendChild(line);
-}
-
-// ── Convert percentage pos to absolute pixels ─
-function _posToPixel(pos, W, H, size) {
-  const padding = 16;
-  const usableW = W - padding * 2 - size;
-  const usableH = H - padding * 2 - size;
-  return {
-    left: padding + Math.round((pos.x / 100) * usableW),
-    top:  padding + Math.round((pos.y / 100) * usableH),
-  };
 }
 
 // ── Building tooltip ──────────────────────────
@@ -211,20 +290,17 @@ function openBuildingTooltip(bldg, anchorEl) {
   `;
   tip.style.display = 'block';
 
-  // Position relative to the overlay
-  const overlay    = document.getElementById('sector-grid-overlay');
+  const overlay     = document.getElementById('sector-grid-overlay');
   const overlayRect = overlay.getBoundingClientRect();
   const anchorRect  = anchorEl.getBoundingClientRect();
 
   let top  = anchorRect.bottom - overlayRect.top + 8;
   let left = anchorRect.left   - overlayRect.left;
   const tipW = 240;
-  const tipH = 130;
+  const tipH = 140;
 
-  // Clamp right edge
-  if (left + tipW > overlayRect.width - 16)  left = overlayRect.width - tipW - 16;
-  // Clamp bottom edge — flip above anchor
-  if (top + tipH > overlayRect.height - 16)  top  = anchorRect.top - overlayRect.top - tipH - 8;
+  if (left + tipW > overlayRect.width  - 16) left = overlayRect.width  - tipW - 16;
+  if (top  + tipH > overlayRect.height - 16) top  = anchorRect.top - overlayRect.top - tipH - 8;
 
   tip.style.top  = top  + 'px';
   tip.style.left = left + 'px';
@@ -259,8 +335,7 @@ function initGrid() {
   document.getElementById('grid-back-btn').addEventListener('click', closeSectorGrid);
   document.getElementById('grid-map-btn').addEventListener('click', closeSectorGridToMap);
 
-  // Close tooltip on canvas background click
   document.getElementById('building-canvas').addEventListener('click', (e) => {
     if (e.target === document.getElementById('building-canvas')) hideBuildingTooltip();
   });
-}
+}
