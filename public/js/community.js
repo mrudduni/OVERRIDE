@@ -1,5 +1,6 @@
 // ============================================
 // OVERRIDE — COMMUNITY FEEDS MODULE
+// Fake News Feed + Neighbor Alerts
 // ============================================
 
 const PROPAGANDA = [
@@ -25,10 +26,11 @@ const WATCHER_ALERTS = [
 ];
 
 function buildCommunity() {
-  const propFeed  = document.getElementById('propaganda-feed');
+  const propFeed   = document.getElementById('propaganda-feed');
   const alertBoard = document.getElementById('alert-board');
   if (!propFeed || !alertBoard) return;
 
+  // Clear empty states
   propFeed.innerHTML = '';
   PROPAGANDA.forEach(item => {
     const card = document.createElement('div');

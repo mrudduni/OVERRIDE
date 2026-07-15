@@ -5,12 +5,15 @@
 function buildMap() {
   const grid = document.getElementById('sector-grid');
   if (!grid) return;
-  grid.innerHTML = '';
+  grid.innerHTML = ''; // clears empty state on first build
 
   OVERRIDE_STATE.sectors.forEach(sector => {
     const tile = document.createElement('div');
     tile.className = `sector-tile ${sector.severity}`;
     tile.dataset.id = sector.id;
+    tile.setAttribute('role', 'listitem');
+    tile.setAttribute('tabindex', '0');
+    tile.setAttribute('aria-label', sector.name + ' — ' + sector.severity);
 
     const nameEl = document.createElement('div');
     nameEl.className = `sector-name ${sector.severity}`;
@@ -33,6 +36,12 @@ function buildMap() {
     tile.appendChild(statsEl);
 
     tile.addEventListener('click', () => openSectorModal(sector));
+    tile.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openSectorModal(sector);
+      }
+    });
 
     grid.appendChild(tile);
   });
@@ -85,7 +94,7 @@ function openSectorModal(sector) {
     voiceEl.textContent = '"' + sector.voice + '"';
     voiceEl.style.display = 'block';
   } else {
-    voiceEl.textContent = '— Sector voice: UNKNOWN. No residents responding. —';
+    voiceEl.textContent = '— Resident voice: UNKNOWN. No residents responding. —';
     voiceEl.style.display = 'block';
   }
 

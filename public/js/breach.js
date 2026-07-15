@@ -9,6 +9,10 @@ function addLogLine(entry) {
   const log = document.getElementById('breach-log');
   if (!log) return;
 
+  // Clear empty/loading state on first real line
+  const emptyState = log.querySelector('.empty-state');
+  if (emptyState) emptyState.remove();
+
   // Remove cursor from previous last line
   const prev = log.querySelector('.log-cursor');
   if (prev) prev.remove();
