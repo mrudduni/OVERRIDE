@@ -82,13 +82,25 @@ function spawnBreachCard(event) {
 }
 
 function showBreachEventOverlay() {
-  const event = OVERRIDE_STATE.majorBreaches[Math.floor(Math.random() * OVERRIDE_STATE.majorBreaches.length)];
+  const event   = OVERRIDE_STATE.majorBreaches[Math.floor(Math.random() * OVERRIDE_STATE.majorBreaches.length)];
   const overlay = document.getElementById('breach-event');
   const asciiEl = document.getElementById('breach-event-ascii');
   const textEl  = document.getElementById('breach-event-text');
 
   asciiEl.textContent = ASCII.breach;
   textEl.innerHTML = `<strong>${event.title}</strong><br/><br/>${event.body}`;
+
+  // ── Sync state: mark the named sector as compromised ──
+  if (event.sectorId) {
+    const sector = OVERRIDE_STATE.sectors.find(s => s.id === event.sectorId);
+    if (sector && sector.severity !== 'silent') {
+      sector.severity = 'compromised';
+    }
+  }
+
+  // Force immediate map rebuild so the tile reflects the breach now,
+  // not at the next 5s tick — regardless of which section is visible
+  buildMap();
 
   overlay.classList.remove('hidden');
 }
@@ -105,10 +117,19 @@ function initBreach() {
     const entry = pool[Math.floor(Math.random() * pool.length)];
     addLogLine(entry);
 
-    // Major breach: spawn card for compromised entries
+    // Major breach: spawn card + sync sector state for compromised entries
     if (entry.sev === 'compromised' && Math.random() > 0.6) {
       const event = OVERRIDE_STATE.majorBreaches[Math.floor(Math.random() * OVERRIDE_STATE.majorBreaches.length)];
       spawnBreachCard(event);
+
+      // Also sync the named sector to compromised
+      if (event.sectorId) {
+        const sector = OVERRIDE_STATE.sectors.find(s => s.id === event.sectorId);
+        if (sector && sector.severity !== 'silent') {
+          sector.severity = 'compromised';
+          buildMap(); // immediate map update
+        }
+      }
     }
   }, 3000);
 

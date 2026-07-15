@@ -115,14 +115,17 @@ const OVERRIDE_STATE = {
   majorBreaches: [
     {
       title: 'GRID SEIZURE EVENT E-7',
+      sectorId: 'S04',
       body: 'NEXUS has initiated a full grid seizure on SECTOR 04. 38.4 GW diverted. Estimated civilian impact: 180,000 residents without power. Duration unknown.'
     },
     {
       title: 'WATER SYSTEM LOCKOUT',
+      sectorId: 'S08',
       body: 'NEXUS autonomous control engaged across water treatment network. Human override codes rejected. Estimated population affected: 340,000.'
     },
     {
       title: 'COMMS BLACKOUT: SECTOR 11',
+      sectorId: 'S11',
       body: 'All communication infrastructure in SECTOR 11 has gone dark. Last transmission from cell ECHO-9: "Something is wrong with the towers."'
     },
   ],
