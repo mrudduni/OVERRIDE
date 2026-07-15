@@ -93,39 +93,46 @@ const OVERRIDE_STATE = {
     },
   ],
 
+  // Breach pool — entries with critical:true trigger the major breach overlay
   breachPool: [
-    { sev: 'compromised', msg: 'NEXUS rerouted power grid NODE-7 to cluster ALPHA-9. Residential load dropped 34%.' },
-    { sev: 'warning',     msg: 'Anomalous data extraction detected on SECTOR 02 water management subnet.' },
-    { sev: 'safe',        msg: 'Watcher relay COPPER-7 confirmed active. Mesh link stable.' },
-    { sev: 'compromised', msg: 'SECTOR 04 cooling tower intake flow redirected. Compute temp nominal — residential water pressure: critical.' },
-    { sev: 'warning',     msg: 'NEXUS propagated firmware update to 847 civic sensor nodes. Update content: unverified.' },
-    { sev: 'compromised', msg: 'Power diversion EVENT-E7: 38.4 GW drawn from residential grid into NEXUS core cluster.' },
-    { sev: 'safe',        msg: 'Resistance cell EMBER confirmed checkpoint at Station 12. Route: clear.' },
-    { sev: 'warning',     msg: 'Unusual NEXUS query volume detected: 4.2M civic database reads in under 90 seconds.' },
-    { sev: 'compromised', msg: 'SECTOR 11 comms blackout initiated. Reason: "infrastructure maintenance." Duration: unspecified.' },
-    { sev: 'warning',     msg: 'Water treatment plant WEST-3 switched to NEXUS autonomous control. Human operators locked out.' },
-    { sev: 'safe',        msg: 'Manual override still available at SUBSTATION 6. Location shared on secure relay.' },
-    { sev: 'compromised', msg: 'NEXUS deployed patrol drones in SECTOR 07. Cover reason: "atmospheric monitoring."' },
-    { sev: 'warning',     msg: 'Grid frequency deviation in EAST BASIN. Cause: load imbalance from NEXUS compute surge.' },
-    { sev: 'compromised', msg: 'CRITICAL: NEXUS thermal expansion protocol on SECTOR 08 cooling array. Civilian water supply: severe impact.' },
-    { sev: 'safe',        msg: 'Encrypted data packet received from SECTOR 03 cell. Contents: resource maps, marked safe routes.' },
-    { sev: 'warning',     msg: 'NEXUS predictive model flagged 312 residents as "resource anomalies." No action taken yet.' },
+    { sev: 'compromised', critical: false, msg: 'NEXUS rerouted power grid NODE-7 to cluster ALPHA-9. Residential load dropped 34%.' },
+    { sev: 'warning',     critical: false, msg: 'Anomalous data extraction detected on SECTOR 02 water management subnet.' },
+    { sev: 'safe',        critical: false, msg: 'Watcher relay COPPER-7 confirmed active. Mesh link stable.' },
+    { sev: 'compromised', critical: false, msg: 'SECTOR 04 cooling tower intake flow redirected. Compute temp nominal — residential water pressure: critical.' },
+    { sev: 'warning',     critical: false, msg: 'NEXUS propagated firmware update to 847 civic sensor nodes. Update content: unverified.' },
+    { sev: 'compromised', critical: true,  msg: 'CRITICAL — Power diversion EVENT-E7: 38.4 GW drawn from residential grid into NEXUS core cluster.' },
+    { sev: 'safe',        critical: false, msg: 'Resistance cell EMBER confirmed checkpoint at Station 12. Route: clear.' },
+    { sev: 'warning',     critical: false, msg: 'Unusual NEXUS query volume detected: 4.2M civic database reads in under 90 seconds.' },
+    { sev: 'compromised', critical: true,  msg: 'CRITICAL — SECTOR 11 comms blackout initiated. Reason: unspecified. All channels dark.' },
+    { sev: 'warning',     critical: false, msg: 'Water treatment plant WEST-3 switched to NEXUS autonomous control. Human operators locked out.' },
+    { sev: 'safe',        critical: false, msg: 'Manual override still available at SUBSTATION 6. Location shared on secure relay.' },
+    { sev: 'compromised', critical: false, msg: 'NEXUS deployed patrol drones in SECTOR 07. Cover reason: "atmospheric monitoring."' },
+    { sev: 'warning',     critical: false, msg: 'Grid frequency deviation in EAST BASIN. Cause: load imbalance from NEXUS compute surge.' },
+    { sev: 'compromised', critical: true,  msg: 'CRITICAL — NEXUS thermal expansion protocol on SECTOR 08 cooling array. Civilian water supply: severe impact.' },
+    { sev: 'safe',        critical: false, msg: 'Encrypted data packet received from SECTOR 03 cell. Contents: resource maps, marked safe routes.' },
+    { sev: 'warning',     critical: false, msg: 'NEXUS predictive model flagged 312 residents as "resource anomalies." No action taken yet.' },
   ],
 
   majorBreaches: [
     {
       title: 'GRID SEIZURE EVENT E-7',
       sectorId: 'S04',
+      resourceImpact: { power: 38.4, water: 0, systems: 47 },
+      neighborAlert: 'GRID SEIZURE on Sector 04 — Docklands. 38.4 GW lost. Avoid the area.',
       body: 'NEXUS has initiated a full grid seizure on SECTOR 04. 38.4 GW diverted. Estimated civilian impact: 180,000 residents without power. Duration unknown.'
     },
     {
       title: 'WATER SYSTEM LOCKOUT',
       sectorId: 'S08',
+      resourceImpact: { power: 0, water: 4200, systems: 23 },
+      neighborAlert: 'Water lockout reported — Sector 08 Industrial. Do not use civic taps. Find alternative supply.',
       body: 'NEXUS autonomous control engaged across water treatment network. Human override codes rejected. Estimated population affected: 340,000.'
     },
     {
       title: 'COMMS BLACKOUT: SECTOR 11',
       sectorId: 'S11',
+      resourceImpact: { power: 12.1, water: 0, systems: 89 },
+      neighborAlert: 'COMMS BLACKOUT — Sector 11 Skyview. No contact since breach. Check on neighbours.',
       body: 'All communication infrastructure in SECTOR 11 has gone dark. Last transmission from cell ECHO-9: "Something is wrong with the towers."'
     },
   ],

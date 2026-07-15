@@ -39,10 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('uncomfortable-overlay').classList.add('hidden');
   });
 
-  document.getElementById('breach-dismiss').addEventListener('click', () => {
-    document.getElementById('breach-event').classList.add('hidden');
-  });
-
   document.getElementById('modal-close').addEventListener('click', () => {
     document.getElementById('sector-modal').classList.add('hidden');
   });

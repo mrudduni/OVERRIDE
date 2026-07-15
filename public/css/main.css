@@ -576,6 +576,51 @@ html, body {
 }
 .breach-event-dismiss:hover { background: rgba(255,51,102,0.1); }
 
+/* Two-button action row */
+.breach-event-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.breach-event-flag {
+  background: transparent;
+  border: 1px solid var(--warning);
+  color: var(--warning);
+  padding: 8px 24px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--radius);
+}
+.breach-event-flag:hover    { background: rgba(255,179,71,0.1); }
+.breach-event-dismiss:focus-visible,
+.breach-event-flag:focus-visible { outline: 1px solid var(--safe); outline-offset: 2px; }
+
+/* Sector tile breach flash — linked to popup */
+@keyframes breach-flash {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,51,102,0.4); }
+  25%       { box-shadow: 0 0 12px 3px rgba(255,51,102,0.8); background: rgba(255,51,102,0.12); }
+  75%       { box-shadow: 0 0 6px 2px rgba(255,51,102,0.5); }
+}
+.sector-tile.breach-flash {
+  animation: breach-flash 0.4s ease-in-out 4 !important;
+}
+
+/* Resource counter jump — ticker digit flash */
+@keyframes ticker-jump {
+  0%   { color: var(--text); }
+  30%  { color: var(--compromised); text-shadow: 0 0 8px rgba(255,51,102,0.7); }
+  100% { color: inherit; text-shadow: none; }
+}
+.ticker-jump { animation: ticker-jump 1s ease-out forwards; }
+
+/* Live neighbor alert — slightly highlighted on entry */
+.alert-card-live {
+  border-color: rgba(63,224,197,0.4) !important;
+  box-shadow: 0 0 0 1px rgba(63,224,197,0.15);
+}
+
 /* ============================================
    SURVIVAL / WATCHER ID
    ============================================ */

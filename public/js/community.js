@@ -72,3 +72,27 @@ function buildCommunity() {
 function initCommunity() {
   buildCommunity();
 }
+
+// ── Public: prepend a live alert to Neighbor Alerts ──
+// Called by breach.js when a watcher flags a breach
+function addNeighborAlert(item) {
+  const board = document.getElementById('alert-board');
+  if (!board) return;
+
+  const card = document.createElement('div');
+  card.className = 'feed-card alert-card alert-card-live';
+
+  const header = document.createElement('div');
+  header.className = 'card-header';
+  header.innerHTML = `<span class="safe mono">${item.id}</span><span class="card-ts">${item.ts}</span>`;
+
+  const body = document.createElement('div');
+  body.className = 'card-body';
+  body.textContent = item.msg;
+
+  card.appendChild(header);
+  card.appendChild(body);
+
+  // Prepend so it appears at top, above static entries
+  board.prepend(card);
+}
