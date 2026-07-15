@@ -1,43 +1,43 @@
-// ============================================
-// OVERRIDE — SECTOR MAP MODULE
+﻿// ============================================
+// OVERRIDE - SECTOR MAP MODULE
 // ============================================
 
 function buildMap() {
-  const grid = document.getElementById('sector-grid');
+  const grid = document.getElementById("sector-grid");
   if (!grid) return;
-  grid.innerHTML = ''; // clears empty state on first build
+  grid.innerHTML = ""; // clears empty state on first build
 
-  OVERRIDE_STATE.sectors.forEach(sector => {
-    const tile = document.createElement('div');
+  OVERRIDE_STATE.sectors.forEach((sector) => {
+    const tile = document.createElement("div");
     tile.className = `sector-tile ${sector.severity}`;
     tile.dataset.id = sector.id;
-    tile.setAttribute('role', 'listitem');
-    tile.setAttribute('tabindex', '0');
-    tile.setAttribute('aria-label', sector.name + ' — ' + sector.severity);
+    tile.setAttribute("role", "listitem");
+    tile.setAttribute("tabindex", "0");
+    tile.setAttribute("aria-label", sector.name + " - " + sector.severity);
 
-    const nameEl = document.createElement('div');
+    const nameEl = document.createElement("div");
     nameEl.className = `sector-name ${sector.severity}`;
     nameEl.textContent = sector.name;
 
-    const statsEl = document.createElement('div');
-    statsEl.className = 'sector-stats';
+    const statsEl = document.createElement("div");
+    statsEl.className = "sector-stats";
 
-    if (sector.severity !== 'silent') {
+    if (sector.severity !== "silent") {
       statsEl.innerHTML = `
         <span>⚡ ${sector.power.toFixed(1)} GW</span>
         <span>💧 ${sector.water.toLocaleString()} ML</span>
         <span>⬡ ${sector.compute.toFixed(1)} PB</span>
       `;
     } else {
-      statsEl.innerHTML = `<span class="muted">— NO SIGNAL —</span>`;
+      statsEl.innerHTML = `<span class="muted">- NO SIGNAL -</span>`;
     }
 
     tile.appendChild(nameEl);
     tile.appendChild(statsEl);
 
-    tile.addEventListener('click', () => openSectorModal(sector));
-    tile.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
+    tile.addEventListener("click", () => openSectorModal(sector));
+    tile.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         openSectorModal(sector);
       }
@@ -46,40 +46,41 @@ function buildMap() {
     grid.appendChild(tile);
   });
 
-  const ts = document.getElementById('map-timestamp');
+  const ts = document.getElementById("map-timestamp");
   if (ts) {
     const now = new Date();
-    ts.textContent = 'LAST SYNC: ' + now.toTimeString().slice(0, 8);
+    ts.textContent = "LAST SYNC: " + now.toTimeString().slice(0, 8);
   }
 }
 
 function openSectorModal(sector) {
-  const modal = document.getElementById('sector-modal');
+  const modal = document.getElementById("sector-modal");
   if (!modal) return;
 
-  const asciiEl = document.getElementById('modal-ascii');
-  const titleEl = document.getElementById('modal-title');
-  const sevEl   = document.getElementById('modal-severity');
-  const statsEl = document.getElementById('modal-stats');
-  const voiceEl = document.getElementById('modal-voice');
+  const asciiEl = document.getElementById("modal-ascii");
+  const titleEl = document.getElementById("modal-title");
+  const sevEl = document.getElementById("modal-severity");
+  const statsEl = document.getElementById("modal-stats");
+  const voiceEl = document.getElementById("modal-voice");
 
   // ASCII art
   const art = ASCII[sector.severity] || ASCII.silent;
   asciiEl.textContent = art;
-  asciiEl.className = 'modal-ascii ' + sector.severity;
+  asciiEl.className = "modal-ascii " + sector.severity;
 
   titleEl.textContent = sector.name;
 
   const sevLabels = {
-    safe:        'STATUS: STABLE — No active extraction detected',
-    warning:     'STATUS: WARNING — Extraction in progress, situation deteriorating',
-    compromised: 'STATUS: COMPROMISED — NEXUS has full sector control',
-    silent:      'STATUS: SILENT — No data. No contact. Unknown.',
+    safe: "STATUS: STABLE - No active extraction detected",
+    warning:
+      "STATUS: WARNING - Extraction in progress, situation deteriorating",
+    compromised: "STATUS: COMPROMISED - NEXUS has full sector control",
+    silent: "STATUS: SILENT - No data. No contact. Unknown.",
   };
-  sevEl.textContent  = sevLabels[sector.severity] || '';
-  sevEl.className    = 'modal-severity mono ' + sector.severity;
+  sevEl.textContent = sevLabels[sector.severity] || "";
+  sevEl.className = "modal-severity mono " + sector.severity;
 
-  if (sector.severity !== 'silent') {
+  if (sector.severity !== "silent") {
     statsEl.innerHTML = `
       <div>POWER DIVERTED: <span class="compromised">${sector.power.toFixed(1)} GW</span></div>
       <div>WATER DIVERTED: <span class="compromised">${sector.water.toLocaleString()} ML</span></div>
@@ -92,44 +93,45 @@ function openSectorModal(sector) {
 
   if (sector.voice) {
     voiceEl.textContent = '"' + sector.voice + '"';
-    voiceEl.style.display = 'block';
+    voiceEl.style.display = "block";
   } else {
-    voiceEl.textContent = '— Resident voice: UNKNOWN. No residents responding. —';
-    voiceEl.style.display = 'block';
+    voiceEl.textContent =
+      "- Resident voice: UNKNOWN. No residents responding. -";
+    voiceEl.style.display = "block";
   }
 
   // View Sector Grid button
-  const existingGridBtn = document.getElementById('modal-grid-btn');
+  const existingGridBtn = document.getElementById("modal-grid-btn");
   if (existingGridBtn) existingGridBtn.remove();
 
-  if (sector.severity !== 'silent') {
-    const gridBtn = document.createElement('button');
-    gridBtn.id = 'modal-grid-btn';
-    gridBtn.className = 'modal-grid-btn mono';
-    gridBtn.textContent = '⬡ VIEW SECTOR GRID';
-    gridBtn.addEventListener('click', () => openSectorGrid(sector));
-    document.querySelector('.modal-info').appendChild(gridBtn);
+  if (sector.severity !== "silent") {
+    const gridBtn = document.createElement("button");
+    gridBtn.id = "modal-grid-btn";
+    gridBtn.className = "modal-grid-btn mono";
+    gridBtn.textContent = "⬡ VIEW SECTOR GRID";
+    gridBtn.addEventListener("click", () => openSectorGrid(sector));
+    document.querySelector(".modal-info").appendChild(gridBtn);
   }
 
-  modal.classList.remove('hidden');
+  modal.classList.remove("hidden");
 }
 
 function initMap() {
   buildMap();
 
-  document.getElementById('modal-close').addEventListener('click', () => {
-    document.getElementById('sector-modal').classList.add('hidden');
+  document.getElementById("modal-close").addEventListener("click", () => {
+    document.getElementById("sector-modal").classList.add("hidden");
   });
 
-  document.getElementById('sector-modal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('sector-modal')) {
-      document.getElementById('sector-modal').classList.add('hidden');
+  document.getElementById("sector-modal").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("sector-modal")) {
+      document.getElementById("sector-modal").classList.add("hidden");
     }
   });
 
   // Refresh map tiles every 5s
   setInterval(() => {
-    if (document.getElementById('section-map').classList.contains('active')) {
+    if (document.getElementById("section-map").classList.contains("active")) {
       buildMap();
     }
   }, 5000);

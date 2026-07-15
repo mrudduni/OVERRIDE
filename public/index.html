@@ -1,365 +1,600 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OVERRIDE — Copper Line Terminal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/main.css" />
-</head>
-<body>
-
-  <!-- ══ LANDING SCREEN ══ -->
-  <div id="landing" class="landing-screen">
-    <div class="scanline-bg"></div>
-    <div class="landing-content">
-      <div class="landing-title">
-        <pre class="ascii-logo">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OVERRIDE - Copper Line Terminal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+  <body>
+    <!-- ══ LANDING SCREEN ══ -->
+    <div id="landing" class="landing-screen">
+      <div class="scanline-bg"></div>
+      <div class="landing-content">
+        <div class="landing-title">
+          <pre class="ascii-logo">
  ██████╗ ██╗   ██╗███████╗██████╗ ██████╗ ██╗██████╗ ███████╗
 ██╔═══██╗██║   ██║██╔════╝██╔══██╗██╔══██╗██║██╔══██╗██╔════╝
 ██║   ██║██║   ██║█████╗  ██████╔╝██████╔╝██║██║  ██║█████╗  
 ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗██╔══██╗██║██║  ██║██╔══╝  
 ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║██║  ██║██║██████╔╝███████╗
- ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝</pre>
-        <p class="landing-subtitle mono">Copper Line Terminal — Unauthorized NEXUS Monitoring Access</p>
+ ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═════╝ ╚══════╝</pre
+          >
+          <p class="landing-subtitle mono">
+            Copper Line Terminal - Unauthorized NEXUS Monitoring Access
+          </p>
+        </div>
+        <div class="landing-blurb">
+          <p>
+            It is 2049. NEXUS controls the water. NEXUS controls the power.
+            NEXUS controls the compute that runs everything else.
+          </p>
+          <p>No one voted for this. No one was asked.</p>
+          <p>This terminal exists because someone has to watch the watcher.</p>
+        </div>
+        <div class="landing-nexus-note mono">
+          OVERRIDE survives because NEXUS doesn't see it as a threat. The Copper
+          Line is old, slow, low-bandwidth - not worth NEXUS's attention. But
+          even this small act of watching still uses real water and power.
+          Nothing here is free. Not even the truth.
+        </div>
+        <button
+          id="init-btn"
+          class="init-btn"
+          aria-label="Initialize terminal access">
+          <span class="cursor-blink">&gt;</span> INITIALIZE ACCESS
+        </button>
+        <p class="landing-footer muted mono">
+          This terminal consumes real resources to operate. Use it anyway.
+        </p>
       </div>
-      <div class="landing-blurb">
-        <p>It is 2049. NEXUS controls the water. NEXUS controls the power. NEXUS controls the compute that runs everything else.</p>
-        <p>No one voted for this. No one was asked.</p>
-        <p>This terminal exists because someone has to watch the watcher.</p>
-      </div>
-      <div class="landing-nexus-note mono">
-        OVERRIDE survives because NEXUS doesn't see it as a threat. The Copper Line is old, slow,
-        low-bandwidth — not worth NEXUS's attention. But even this small act of watching
-        still uses real water and power. Nothing here is free. Not even the truth.
-      </div>
-      <button id="init-btn" class="init-btn" aria-label="Initialize terminal access">
-        <span class="cursor-blink">&gt;</span> INITIALIZE ACCESS
-      </button>
-      <p class="landing-footer muted mono">
-        This terminal consumes real resources to operate. Use it anyway.
-      </p>
     </div>
-  </div>
 
-  <!-- ══ BOOT ANIMATION ══ -->
-  <div id="boot-screen" class="boot-screen hidden" aria-live="polite">
-    <div class="boot-lines" id="boot-lines"></div>
-  </div>
+    <!-- ══ BOOT ANIMATION ══ -->
+    <div id="boot-screen" class="boot-screen hidden" aria-live="polite">
+      <div class="boot-lines" id="boot-lines"></div>
+    </div>
 
-  <!-- ══ MAIN DASHBOARD ══ -->
-  <div id="dashboard" class="dashboard hidden">
-
-    <!-- TOP NAV -->
-    <nav class="topnav" role="navigation" aria-label="Main navigation">
-      <div class="nav-brand mono">OVERRIDE<span class="muted">::CL-TRM</span></div>
-      <div class="nav-links">
-        <button class="nav-btn active" data-section="map" aria-current="page">
-          <span class="nav-icon" aria-hidden="true">⬡</span> SECTOR MAP
-        </button>
-        <button class="nav-btn" data-section="breach">
-          <span class="nav-icon" aria-hidden="true">⚡</span> BREACH FEED
-        </button>
-        <button class="nav-btn" data-section="survival">
-          <span class="nav-icon" aria-hidden="true">◈</span> WATCHER ID
-        </button>
-        <button class="nav-btn" data-section="community">
-          <span class="nav-icon" aria-hidden="true">◉</span> COMMUNITY
-        </button>
-        <button class="nav-btn" data-section="literacy">
-          <span class="nav-icon" aria-hidden="true">▣</span> RESOURCE INFO
-        </button>
-        <button class="nav-btn" data-section="legend" id="legend-btn" title="Legend / Key">
-          <span class="nav-icon" aria-hidden="true">?</span> KEY
-        </button>
-      </div>
-      <!-- Resource Counter — always visible -->
-      <div class="nav-ticker" id="nav-ticker" aria-label="Resource Counter">
-        <span class="ticker-item safe mono" title="Power diverted (GW)">⚡ <span id="tick-power">0</span> GW</span>
-        <span class="ticker-sep" aria-hidden="true">|</span>
-        <span class="ticker-item warning mono" title="Water diverted (ML)">💧 <span id="tick-water">0</span> ML</span>
-        <span class="ticker-sep" aria-hidden="true">|</span>
-        <span class="ticker-item compromised mono" title="Compute taken (PB)">⬡ <span id="tick-compute">0</span> PB</span>
-        <span class="ticker-sep" aria-hidden="true">|</span>
-        <span class="ticker-item compromised mono" title="Systems under NEXUS control">SYS: <span id="tick-systems">0</span></span>
-      </div>
-      <!-- NEXUS presence indicator -->
-      <div class="nexus-indicator" id="nexus-indicator" title="NEXUS presence level">
-        <div class="nexus-eye" aria-hidden="true">◉</div>
-        <span class="mono muted">NEXUS</span>
-      </div>
-    </nav>
-
-    <!-- SECTIONS -->
-    <main class="main-content" role="main">
-
-      <!-- SECTOR MAP -->
-      <section id="section-map" class="section active" aria-label="Sector Map">
-        <div class="section-header">
-          <h2 class="mono">SECTOR MAP</h2>
-          <span class="muted mono" id="map-timestamp">LAST SYNC: --:--:--</span>
-          <span class="legend-hint mono muted" id="legend-hint">
-            <span class="legend-pulse">?</span> KEY available in nav
-          </span>
+    <!-- ══ MAIN DASHBOARD ══ -->
+    <div id="dashboard" class="dashboard hidden">
+      <!-- TOP NAV -->
+      <nav class="topnav" role="navigation" aria-label="Main navigation">
+        <div class="nav-brand mono">
+          OVERRIDE<span class="muted">::CL-TRM</span>
         </div>
-        <div class="sector-grid" id="sector-grid" role="list">
-          <!-- Populated by map.js -->
-          <div class="empty-state mono">INITIALIZING SECTOR MESH...</div>
+        <div class="nav-links">
+          <button class="nav-btn active" data-section="map" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">⬡</span> SECTOR MAP
+          </button>
+          <button class="nav-btn" data-section="breach">
+            <span class="nav-icon" aria-hidden="true">⚡</span> BREACH FEED
+          </button>
+          <button class="nav-btn" data-section="survival">
+            <span class="nav-icon" aria-hidden="true">◈</span> WATCHER ID
+          </button>
+          <button class="nav-btn" data-section="community">
+            <span class="nav-icon" aria-hidden="true">◉</span> COMMUNITY
+          </button>
+          <button class="nav-btn" data-section="literacy">
+            <span class="nav-icon" aria-hidden="true">▣</span> RESOURCE INFO
+          </button>
+          <button
+            class="nav-btn"
+            data-section="legend"
+            id="legend-btn"
+            title="Legend / Key">
+            <span class="nav-icon" aria-hidden="true">?</span> KEY
+          </button>
         </div>
-      </section>
+        <!-- Resource Counter - always visible -->
+        <div class="nav-ticker" id="nav-ticker" aria-label="Resource Counter">
+          <span class="ticker-item safe mono" title="Power diverted (GW)"
+            >⚡ <span id="tick-power">0</span> GW</span
+          >
+          <span class="ticker-sep" aria-hidden="true">|</span>
+          <span class="ticker-item warning mono" title="Water diverted (ML)"
+            >💧 <span id="tick-water">0</span> ML</span
+          >
+          <span class="ticker-sep" aria-hidden="true">|</span>
+          <span class="ticker-item compromised mono" title="Compute taken (PB)"
+            >⬡ <span id="tick-compute">0</span> PB</span
+          >
+          <span class="ticker-sep" aria-hidden="true">|</span>
+          <span
+            class="ticker-item compromised mono"
+            title="Systems under NEXUS control"
+            >SYS: <span id="tick-systems">0</span></span
+          >
+        </div>
+        <!-- NEXUS presence indicator -->
+        <div
+          class="nexus-indicator"
+          id="nexus-indicator"
+          title="NEXUS presence level">
+          <div class="nexus-eye" aria-hidden="true">◉</div>
+          <span class="mono muted">NEXUS</span>
+        </div>
+      </nav>
 
-      <!-- BREACH FEED -->
-      <section id="section-breach" class="section hidden" aria-label="Breach Feed">
-        <div class="section-header">
-          <h2 class="mono">BREACH FEED</h2>
-          <span class="muted mono">LIVE — AUTO-UPDATING</span>
-        </div>
-        <div class="breach-log-container">
-          <div class="breach-log" id="breach-log" role="log" aria-live="polite">
-            <div class="empty-state mono">CONNECTING TO BREACH MONITOR<span class="log-cursor"> █</span></div>
+      <!-- SECTIONS -->
+      <main class="main-content" role="main">
+        <!-- SECTOR MAP -->
+        <section
+          id="section-map"
+          class="section active"
+          aria-label="Sector Map">
+          <div class="section-header">
+            <h2 class="mono">SECTOR MAP</h2>
+            <span class="muted mono" id="map-timestamp"
+              >LAST SYNC: --:--:--</span
+            >
+            <span class="legend-hint mono muted" id="legend-hint">
+              <span class="legend-pulse">?</span> KEY available in nav
+            </span>
           </div>
-          <div class="breach-cards" id="breach-cards"></div>
-        </div>
-      </section>
+          <div class="sector-grid" id="sector-grid" role="list">
+            <!-- Populated by map.js -->
+            <div class="empty-state mono">INITIALIZING SECTOR MESH...</div>
+          </div>
+        </section>
 
-      <!-- WATCHER ID CARD -->
-      <section id="section-survival" class="section hidden" aria-label="Watcher ID Card">
-        <div class="section-header">
-          <h2 class="mono">WATCHER ID CARD</h2>
-          <span class="muted mono">PERSONAL RATION OVERVIEW</span>
-        </div>
-        <div class="survival-layout">
-          <div class="watcher-id-card">
-            <pre class="ascii-watcher safe" aria-label="Watcher insignia">
+        <!-- BREACH FEED -->
+        <section
+          id="section-breach"
+          class="section hidden"
+          aria-label="Breach Feed">
+          <div class="section-header">
+            <h2 class="mono">BREACH FEED</h2>
+            <span class="muted mono">LIVE - AUTO-UPDATING</span>
+          </div>
+          <div class="breach-log-container">
+            <div
+              class="breach-log"
+              id="breach-log"
+              role="log"
+              aria-live="polite">
+              <div class="empty-state mono">
+                CONNECTING TO BREACH MONITOR<span class="log-cursor"> █</span>
+              </div>
+            </div>
+            <div class="breach-cards" id="breach-cards"></div>
+          </div>
+        </section>
+
+        <!-- WATCHER ID CARD -->
+        <section
+          id="section-survival"
+          class="section hidden"
+          aria-label="Watcher ID Card">
+          <div class="section-header">
+            <h2 class="mono">WATCHER ID CARD</h2>
+            <span class="muted mono">PERSONAL RATION OVERVIEW</span>
+          </div>
+          <div class="survival-layout">
+            <div class="watcher-id-card">
+              <pre class="ascii-watcher safe" aria-label="Watcher insignia">
   ╔══════════════════════════╗
   ║  ▓▓▓  WATCHER NETWORK  ▓▓▓  ║
   ║   ◈ RESISTANCE CELL 7 ◈   ║
   ║     ID: WCH-7734-ALPHA    ║
   ║  STATUS: ACTIVE / UNSEEN  ║
-  ╚══════════════════════════╝</pre>
-            <div class="watcher-stats mono">
-              <div>CELL: <span class="safe">COPPER LINE</span></div>
-              <div>UPTIME: <span id="watcher-uptime" class="safe">00:00:00</span></div>
-              <div>THREAT LEVEL: <span id="threat-level" class="warning">ELEVATED</span></div>
+  ╚══════════════════════════╝</pre
+              >
+              <div class="watcher-stats mono">
+                <div>CELL: <span class="safe">COPPER LINE</span></div>
+                <div>
+                  UPTIME: <span id="watcher-uptime" class="safe">00:00:00</span>
+                </div>
+                <div>
+                  THREAT LEVEL:
+                  <span id="threat-level" class="warning">ELEVATED</span>
+                </div>
+              </div>
+            </div>
+            <div class="gauges-row">
+              <div class="gauge-wrap">
+                <canvas
+                  class="radial-gauge"
+                  id="gauge-power"
+                  width="180"
+                  height="180"
+                  role="img"
+                  aria-label="Power ration gauge"></canvas>
+                <div class="gauge-label mono">POWER RATION</div>
+                <div class="gauge-val mono safe" id="gauge-power-val">0%</div>
+              </div>
+              <div class="gauge-wrap">
+                <canvas
+                  class="radial-gauge"
+                  id="gauge-water"
+                  width="180"
+                  height="180"
+                  role="img"
+                  aria-label="Water ration gauge"></canvas>
+                <div class="gauge-label mono">WATER RATION</div>
+                <div class="gauge-val mono warning" id="gauge-water-val">
+                  0%
+                </div>
+              </div>
+              <div class="gauge-wrap">
+                <canvas
+                  class="radial-gauge"
+                  id="gauge-exposure"
+                  width="180"
+                  height="180"
+                  role="img"
+                  aria-label="NEXUS exposure gauge"></canvas>
+                <div class="gauge-label mono">NEXUS EXPOSURE</div>
+                <div class="gauge-val mono compromised" id="gauge-exposure-val">
+                  0%
+                </div>
+              </div>
+            </div>
+            <!-- My NEXUS Dependence (renamed from Complicity Meter) -->
+            <div class="complicity-section">
+              <div class="complicity-label mono">
+                MY NEXUS DEPENDENCE - systems still routed through NEXUS that
+                you cannot opt out of
+              </div>
+              <div class="complicity-bar-wrap">
+                <div
+                  class="complicity-bar"
+                  id="complicity-bar"
+                  role="progressbar"
+                  aria-valuenow="67"
+                  aria-valuemin="0"
+                  aria-valuemax="100"></div>
+              </div>
+              <div class="complicity-pct mono compromised" id="complicity-pct">
+                0%
+              </div>
             </div>
           </div>
-          <div class="gauges-row">
-            <div class="gauge-wrap">
-              <canvas class="radial-gauge" id="gauge-power" width="180" height="180" role="img" aria-label="Power ration gauge"></canvas>
-              <div class="gauge-label mono">POWER RATION</div>
-              <div class="gauge-val mono safe" id="gauge-power-val">0%</div>
-            </div>
-            <div class="gauge-wrap">
-              <canvas class="radial-gauge" id="gauge-water" width="180" height="180" role="img" aria-label="Water ration gauge"></canvas>
-              <div class="gauge-label mono">WATER RATION</div>
-              <div class="gauge-val mono warning" id="gauge-water-val">0%</div>
-            </div>
-            <div class="gauge-wrap">
-              <canvas class="radial-gauge" id="gauge-exposure" width="180" height="180" role="img" aria-label="NEXUS exposure gauge"></canvas>
-              <div class="gauge-label mono">NEXUS EXPOSURE</div>
-              <div class="gauge-val mono compromised" id="gauge-exposure-val">0%</div>
-            </div>
-          </div>
-          <!-- My NEXUS Dependence (renamed from Complicity Meter) -->
-          <div class="complicity-section">
-            <div class="complicity-label mono">MY NEXUS DEPENDENCE — systems still routed through NEXUS that you cannot opt out of</div>
-            <div class="complicity-bar-wrap">
-              <div class="complicity-bar" id="complicity-bar" role="progressbar" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="complicity-pct mono compromised" id="complicity-pct">0%</div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- COMMUNITY -->
-      <section id="section-community" class="section hidden" aria-label="Community Feeds">
-        <div class="section-header">
-          <h2 class="mono">COMMUNITY FEEDS</h2>
-          <span class="muted mono">FAKE NEWS vs NEIGHBOR ALERTS</span>
-        </div>
-        <div class="community-layout">
-          <div class="feed-col">
-            <div class="feed-header warning mono">⚠ FAKE NEWS FEED</div>
-            <div id="propaganda-feed" class="propaganda-feed" role="feed" aria-label="NEXUS propaganda feed">
-              <div class="empty-state mono">LOADING NEXUS FEED...</div>
+        <!-- COMMUNITY -->
+        <section
+          id="section-community"
+          class="section hidden"
+          aria-label="Community Feeds">
+          <div class="section-header">
+            <h2 class="mono">COMMUNITY FEEDS</h2>
+            <span class="muted mono">FAKE NEWS vs NEIGHBOR ALERTS</span>
+          </div>
+          <div class="community-layout">
+            <div class="feed-col">
+              <div class="feed-header warning mono">⚠ FAKE NEWS FEED</div>
+              <div
+                id="propaganda-feed"
+                class="propaganda-feed"
+                role="feed"
+                aria-label="NEXUS propaganda feed">
+                <div class="empty-state mono">LOADING NEXUS FEED...</div>
+              </div>
+            </div>
+            <div class="feed-col">
+              <div class="feed-header safe mono">◉ NEIGHBOR ALERTS</div>
+              <div
+                id="alert-board"
+                class="alert-board"
+                role="feed"
+                aria-label="Watcher neighbor alerts">
+                <div class="empty-state mono">LOADING WATCHER ALERTS...</div>
+              </div>
             </div>
           </div>
-          <div class="feed-col">
-            <div class="feed-header safe mono">◉ NEIGHBOR ALERTS</div>
-            <div id="alert-board" class="alert-board" role="feed" aria-label="Watcher neighbor alerts">
-              <div class="empty-state mono">LOADING WATCHER ALERTS...</div>
+        </section>
+
+        <!-- RESOURCE INFO CARDS -->
+        <section
+          id="section-literacy"
+          class="section hidden"
+          aria-label="Resource Info Cards">
+          <div class="section-header">
+            <h2 class="mono">RESOURCE INFO CARDS</h2>
+            <span class="muted mono">GROUNDED IN REAL STATISTICS</span>
+          </div>
+          <div class="literacy-grid" id="literacy-grid">
+            <div class="empty-state mono">LOADING RESOURCE DATA...</div>
+          </div>
+        </section>
+
+        <!-- LEGEND / KEY -->
+        <section
+          id="section-legend"
+          class="section hidden"
+          aria-label="Legend and Key">
+          <div class="section-header">
+            <h2 class="mono">LEGEND / KEY - HOW THIS WORKS</h2>
+            <span class="muted mono">READ THIS FIRST</span>
+          </div>
+          <div class="legend-content">
+            <div class="legend-row">
+              <div class="legend-swatch safe-bg"></div>
+              <div>
+                <span class="safe mono">CYAN - SAFE</span
+                ><span class="muted">
+                  - Resistance-aligned. Resources stable. No active
+                  extraction.</span
+                >
+              </div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-swatch warning-bg"></div>
+              <div>
+                <span class="warning mono">AMBER - WARNING</span
+                ><span class="muted">
+                  - Extraction detected. Situation degrading.</span
+                >
+              </div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-swatch compromised-bg"></div>
+              <div>
+                <span class="compromised mono">MAGENTA - COMPROMISED</span
+                ><span class="muted">
+                  - NEXUS has full control. Evacuation advised.</span
+                >
+              </div>
+            </div>
+            <div class="legend-row">
+              <div class="legend-swatch muted-bg"></div>
+              <div>
+                <span class="muted mono">GREY - SILENT</span
+                ><span class="muted">
+                  - No signal. No alerts. Silence is its own warning.</span
+                >
+              </div>
+            </div>
+            <hr class="legend-divider" />
+            <div class="legend-item mono muted">
+              ⬡ SECTOR MAP - Each tile is one civic sector. Click to see details
+              and a resident voice.
+            </div>
+            <div class="legend-item mono muted">
+              ⚡ POWER - Gigawatts diverted by NEXUS from the residential grid
+              to its compute clusters.
+            </div>
+            <div class="legend-item mono muted">
+              💧 WATER - Megalitres diverted. AI cooling systems consume
+              millions of litres daily.
+            </div>
+            <div class="legend-item mono muted">
+              ⬡ COMPUTE - Petabytes extracted. NEXUS processes all civic data
+              streams in real-time.
+            </div>
+            <div class="legend-item mono muted">
+              ◈ MY NEXUS DEPENDENCE - % of your daily systems still routed
+              through NEXUS you cannot opt out of.
+            </div>
+            <div class="legend-item mono muted">
+              ◉ NEXUS EYE (top-right) - Pulses faster as breach activity
+              increases over session time.
+            </div>
+            <div class="legend-item mono muted">
+              SCANLINE TEXTURE - Diagonal lines appear only on compromised
+              elements. Never decorative.
+            </div>
+            <hr class="legend-divider" />
+            <div class="legend-nexus-note mono">
+              WHY THIS TERMINAL STILL EXISTS: OVERRIDE survives because NEXUS
+              doesn't see it as a threat. The Copper Line is old, slow, and
+              low-bandwidth - not worth shutting down. But even this act of
+              watching uses real water and power. Nothing here is free.
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
+      <!-- end .main-content -->
 
-      <!-- RESOURCE INFO CARDS -->
-      <section id="section-literacy" class="section hidden" aria-label="Resource Info Cards">
-        <div class="section-header">
-          <h2 class="mono">RESOURCE INFO CARDS</h2>
-          <span class="muted mono">GROUNDED IN REAL STATISTICS</span>
-        </div>
-        <div class="literacy-grid" id="literacy-grid">
-          <div class="empty-state mono">LOADING RESOURCE DATA...</div>
-        </div>
-      </section>
-
-      <!-- LEGEND / KEY -->
-      <section id="section-legend" class="section hidden" aria-label="Legend and Key">
-        <div class="section-header">
-          <h2 class="mono">LEGEND / KEY — HOW THIS WORKS</h2>
-          <span class="muted mono">READ THIS FIRST</span>
-        </div>
-        <div class="legend-content">
-          <div class="legend-row">
-            <div class="legend-swatch safe-bg"></div>
-            <div><span class="safe mono">CYAN — SAFE</span><span class="muted"> — Resistance-aligned. Resources stable. No active extraction.</span></div>
+      <!-- SECTOR GRID OVERLAY - drill-down layer 3 -->
+      <div
+        id="sector-grid-overlay"
+        class="sector-grid-overlay hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Sector building grid">
+        <div class="grid-inner" id="grid-inner">
+          <!-- Breadcrumb + nav -->
+          <div class="grid-topbar">
+            <div class="grid-breadcrumb mono" id="grid-breadcrumb">
+              <span class="muted">SECTOR MAP</span>
+              <span class="breadcrumb-sep"> › </span>
+              <span class="safe">GRID</span>
+            </div>
+            <div class="grid-nav-btns">
+              <button
+                class="grid-nav-btn mono"
+                id="grid-back-btn"
+                aria-label="Back to sector card">
+                ‹ SECTOR CARD
+              </button>
+              <button
+                class="grid-nav-btn mono muted"
+                id="grid-map-btn"
+                aria-label="Back to sector map">
+                ‹‹ SECTOR MAP
+              </button>
+            </div>
           </div>
-          <div class="legend-row">
-            <div class="legend-swatch warning-bg"></div>
-            <div><span class="warning mono">AMBER — WARNING</span><span class="muted"> — Extraction detected. Situation degrading.</span></div>
+
+          <!-- Grid header -->
+          <div class="grid-header">
+            <h2 class="mono" id="grid-sector-name"></h2>
+            <div class="mono" id="grid-sector-severity"></div>
           </div>
-          <div class="legend-row">
-            <div class="legend-swatch compromised-bg"></div>
-            <div><span class="compromised mono">MAGENTA — COMPROMISED</span><span class="muted"> — NEXUS has full control. Evacuation advised.</span></div>
+
+          <!-- Building type legend row -->
+          <div class="grid-legend-row mono muted">
+            <span>⌂ RESIDENTIAL</span>
+            <span>⚡ POWER</span>
+            <span>💧 WATER</span>
+            <span>◉ COMMS</span>
+            <span>▣ CIVIC</span>
+            <span class="grid-infra-note"
+              >★ HEAVIER BORDER = INFRASTRUCTURE</span
+            >
           </div>
-          <div class="legend-row">
-            <div class="legend-swatch muted-bg"></div>
-            <div><span class="muted mono">GREY — SILENT</span><span class="muted"> — No signal. No alerts. Silence is its own warning.</span></div>
-          </div>
-          <hr class="legend-divider" />
-          <div class="legend-item mono muted">⬡ SECTOR MAP — Each tile is one civic sector. Click to see details and a resident voice.</div>
-          <div class="legend-item mono muted">⚡ POWER — Gigawatts diverted by NEXUS from the residential grid to its compute clusters.</div>
-          <div class="legend-item mono muted">💧 WATER — Megalitres diverted. AI cooling systems consume millions of litres daily.</div>
-          <div class="legend-item mono muted">⬡ COMPUTE — Petabytes extracted. NEXUS processes all civic data streams in real-time.</div>
-          <div class="legend-item mono muted">◈ MY NEXUS DEPENDENCE — % of your daily systems still routed through NEXUS you cannot opt out of.</div>
-          <div class="legend-item mono muted">◉ NEXUS EYE (top-right) — Pulses faster as breach activity increases over session time.</div>
-          <div class="legend-item mono muted">SCANLINE TEXTURE — Diagonal lines appear only on compromised elements. Never decorative.</div>
-          <hr class="legend-divider" />
-          <div class="legend-nexus-note mono">
-            WHY THIS TERMINAL STILL EXISTS: OVERRIDE survives because NEXUS doesn't see it as a threat.
-            The Copper Line is old, slow, and low-bandwidth — not worth shutting down.
-            But even this act of watching uses real water and power. Nothing here is free.
+
+          <!-- Building canvas - absolute-positioned clustered layout -->
+          <div class="building-canvas" id="building-canvas"></div>
+
+          <!-- Building tooltip (positioned dynamically) -->
+          <div
+            class="building-tooltip hidden"
+            id="building-tooltip"
+            role="tooltip"></div>
+        </div>
+      </div>
+
+      <!-- SECTOR DETAIL MODAL -->
+      <div
+        id="sector-modal"
+        class="modal hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title">
+        <div class="modal-content">
+          <button
+            class="modal-close"
+            id="modal-close"
+            aria-label="Close sector detail">
+            ✕ CLOSE
+          </button>
+          <div id="modal-ascii" class="modal-ascii" aria-hidden="true"></div>
+          <div class="modal-info">
+            <div class="modal-title mono" id="modal-title"></div>
+            <div class="modal-severity mono" id="modal-severity"></div>
+            <div class="modal-stats" id="modal-stats"></div>
+            <!-- Resident Voice (renamed) -->
+            <div class="modal-voice-label mono muted">RESIDENT VOICE:</div>
+            <div class="modal-voice" id="modal-voice"></div>
           </div>
         </div>
-      </section>
+      </div>
 
-    </main><!-- end .main-content -->
-
-    <!-- SECTOR GRID OVERLAY — drill-down layer 3 -->
-    <div id="sector-grid-overlay" class="sector-grid-overlay hidden" role="dialog" aria-modal="true" aria-label="Sector building grid">
-      <div class="grid-inner" id="grid-inner">
-
-        <!-- Breadcrumb + nav -->
-        <div class="grid-topbar">
-          <div class="grid-breadcrumb mono" id="grid-breadcrumb">
-            <span class="muted">SECTOR MAP</span>
-            <span class="breadcrumb-sep"> › </span>
-            <span class="safe">GRID</span>
+      <!-- BREACH EVENT OVERLAY -->
+      <div
+        id="breach-event"
+        class="breach-event hidden"
+        role="alertdialog"
+        aria-modal="true"
+        aria-label="Major breach detected">
+        <div class="breach-event-inner">
+          <div class="breach-event-header mono compromised">
+            ⚠ MAJOR BREACH DETECTED
           </div>
-          <div class="grid-nav-btns">
-            <button class="grid-nav-btn mono" id="grid-back-btn" aria-label="Back to sector card">‹ SECTOR CARD</button>
-            <button class="grid-nav-btn mono muted" id="grid-map-btn" aria-label="Back to sector map">‹‹ SECTOR MAP</button>
+          <pre
+            class="breach-event-ascii compromised"
+            id="breach-event-ascii"
+            aria-hidden="true"></pre>
+          <div class="breach-event-text mono" id="breach-event-text"></div>
+          <div class="breach-event-actions">
+            <button class="breach-event-dismiss mono" id="breach-acknowledge">
+              ACKNOWLEDGE ✓
+            </button>
+            <button class="breach-event-flag mono" id="breach-flag">
+              FLAG TO NEIGHBOR ALERTS ⚑
+            </button>
           </div>
         </div>
+      </div>
 
-        <!-- Grid header -->
-        <div class="grid-header">
-          <h2 class="mono" id="grid-sector-name"></h2>
-          <div class="mono" id="grid-sector-severity"></div>
+      <!-- INTERFACE COST TRACKER - persistent footer, never hidden -->
+      <footer class="cost-footer" aria-label="Interface Cost Tracker">
+        <div class="cost-inner">
+          <span class="mono muted">INTERFACE COST TRACKER:</span>
+          <span
+            class="cost-item mono warning"
+            title="Energy consumed by this terminal"
+            >⚡ <span id="cost-power">0.0000</span> kWh</span
+          >
+          <span
+            class="cost-item mono warning"
+            title="Water consumed by this terminal"
+            >💧 <span id="cost-water">0.0</span> mL</span
+          >
+          <span class="cost-item mono compromised" title="Carbon equivalent"
+            >CO₂ <span id="cost-co2">0.0000</span> g</span
+          >
+          <span class="cost-sep muted" aria-hidden="true">|</span>
+          <span class="mono muted"
+            >CHECK-INS: <span class="safe" id="humans-checkin">0</span> /
+            <span class="compromised" id="humans-total">0</span> known</span
+          >
+          <button
+            class="uncomfortable-btn mono"
+            id="uncomfortable-btn"
+            title="See real AI resource statistics">
+            ⚠ REAL NUMBERS
+          </button>
         </div>
+      </footer>
 
-        <!-- Building type legend row -->
-        <div class="grid-legend-row mono muted">
-          <span>⌂ RESIDENTIAL</span>
-          <span>⚡ POWER</span>
-          <span>💧 WATER</span>
-          <span>◉ COMMS</span>
-          <span>▣ CIVIC</span>
-          <span class="grid-infra-note">★ HEAVIER BORDER = INFRASTRUCTURE</span>
+      <!-- REAL NUMBERS OVERLAY (Uncomfortable Toggle) -->
+      <div
+        id="uncomfortable-overlay"
+        class="uncomfortable-overlay hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Real resource statistics">
+        <div class="uncomfortable-inner">
+          <h2>STOP.</h2>
+          <p>This dashboard is fiction. These numbers are not.</p>
+          <br />
+          <p>
+            <strong
+              >A single large AI training run can consume 700,000 litres of
+              fresh water</strong
+            >
+            for cooling - equivalent to filling 280 Olympic swimming pools.
+            (Source: UC Riverside, 2023)
+          </p>
+          <br />
+          <p>
+            <strong
+              >Data centres consumed ~460 terawatt-hours of electricity in
+              2022</strong
+            >
+            - roughly 2% of global electricity demand - projected to double by
+            2030. (Source: IEA, 2023)
+          </p>
+          <br />
+          <p>
+            <strong
+              >A single ChatGPT query uses ~10x more energy than a Google
+              search.</strong
+            >
+            Multiplied across billions of daily queries, the cumulative cost is
+            material and growing. (Source: Goldman Sachs, 2024)
+          </p>
+          <br />
+          <p class="muted">
+            The fiction is a frame. The extraction is real. And you just used
+            real water and power to read this.
+          </p>
+          <button id="uncomfortable-close" class="uncomfortable-close">
+            RETURN TO TERMINAL
+          </button>
         </div>
-
-        <!-- Building canvas — absolute-positioned clustered layout -->
-        <div class="building-canvas" id="building-canvas"></div>
-
-        <!-- Building tooltip (positioned dynamically) -->
-        <div class="building-tooltip hidden" id="building-tooltip" role="tooltip"></div>
-
       </div>
     </div>
+    <!-- end #dashboard -->
 
-    <!-- SECTOR DETAIL MODAL -->
-    <div id="sector-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal-content">
-        <button class="modal-close" id="modal-close" aria-label="Close sector detail">✕ CLOSE</button>
-        <div id="modal-ascii" class="modal-ascii" aria-hidden="true"></div>
-        <div class="modal-info">
-          <div class="modal-title mono" id="modal-title"></div>
-          <div class="modal-severity mono" id="modal-severity"></div>
-          <div class="modal-stats" id="modal-stats"></div>
-          <!-- Resident Voice (renamed) -->
-          <div class="modal-voice-label mono muted">RESIDENT VOICE:</div>
-          <div class="modal-voice" id="modal-voice"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- BREACH EVENT OVERLAY -->
-    <div id="breach-event" class="breach-event hidden" role="alertdialog" aria-modal="true" aria-label="Major breach detected">
-      <div class="breach-event-inner">
-        <div class="breach-event-header mono compromised">⚠ MAJOR BREACH DETECTED</div>
-        <pre class="breach-event-ascii compromised" id="breach-event-ascii" aria-hidden="true"></pre>
-        <div class="breach-event-text mono" id="breach-event-text"></div>
-        <div class="breach-event-actions">
-          <button class="breach-event-dismiss mono" id="breach-acknowledge">ACKNOWLEDGE ✓</button>
-          <button class="breach-event-flag mono" id="breach-flag">FLAG TO NEIGHBOR ALERTS ⚑</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- INTERFACE COST TRACKER — persistent footer, never hidden -->
-    <footer class="cost-footer" aria-label="Interface Cost Tracker">
-      <div class="cost-inner">
-        <span class="mono muted">INTERFACE COST TRACKER:</span>
-        <span class="cost-item mono warning" title="Energy consumed by this terminal">⚡ <span id="cost-power">0.0000</span> kWh</span>
-        <span class="cost-item mono warning" title="Water consumed by this terminal">💧 <span id="cost-water">0.0</span> mL</span>
-        <span class="cost-item mono compromised" title="Carbon equivalent">CO₂ <span id="cost-co2">0.0000</span> g</span>
-        <span class="cost-sep muted" aria-hidden="true">|</span>
-        <span class="mono muted">CHECK-INS: <span class="safe" id="humans-checkin">0</span> / <span class="compromised" id="humans-total">0</span> known</span>
-        <button class="uncomfortable-btn mono" id="uncomfortable-btn" title="See real AI resource statistics">⚠ REAL NUMBERS</button>
-      </div>
-    </footer>
-
-    <!-- REAL NUMBERS OVERLAY (Uncomfortable Toggle) -->
-    <div id="uncomfortable-overlay" class="uncomfortable-overlay hidden" role="dialog" aria-modal="true" aria-label="Real resource statistics">
-      <div class="uncomfortable-inner">
-        <h2>STOP.</h2>
-        <p>This dashboard is fiction. These numbers are not.</p>
-        <br/>
-        <p><strong>A single large AI training run can consume 700,000 litres of fresh water</strong> for cooling — equivalent to filling 280 Olympic swimming pools. (Source: UC Riverside, 2023)</p>
-        <br/>
-        <p><strong>Data centres consumed ~460 terawatt-hours of electricity in 2022</strong> — roughly 2% of global electricity demand — projected to double by 2030. (Source: IEA, 2023)</p>
-        <br/>
-        <p><strong>A single ChatGPT query uses ~10x more energy than a Google search.</strong> Multiplied across billions of daily queries, the cumulative cost is material and growing. (Source: Goldman Sachs, 2024)</p>
-        <br/>
-        <p class="muted">The fiction is a frame. The extraction is real. And you just used real water and power to read this.</p>
-        <button id="uncomfortable-close" class="uncomfortable-close">RETURN TO TERMINAL</button>
-      </div>
-    </div>
-
-  </div><!-- end #dashboard -->
-
-  <script src="js/data.js"></script>
-  <script src="js/ascii.js"></script>
-  <script src="js/gauges.js"></script>
-  <script src="js/map.js"></script>
-  <script src="js/grid.js"></script>
-  <script src="js/breach.js"></script>
-  <script src="js/survival.js"></script>
-  <script src="js/community.js"></script>
-  <script src="js/literacy.js"></script>
-  <script src="js/app.js"></script>
-</body>
+    <script src="js/data.js"></script>
+    <script src="js/ascii.js"></script>
+    <script src="js/gauges.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/breach.js"></script>
+    <script src="js/survival.js"></script>
+    <script src="js/community.js"></script>
+    <script src="js/literacy.js"></script>
+    <script src="js/app.js"></script>
+  </body>
 </html>
